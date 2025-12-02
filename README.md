@@ -37,6 +37,5 @@ In the project directory, you can run:
 Create a `.env` file in the root directory with the following variables:
 
 ```
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
+VITE_BACKEND_URL=https://bulkwala-backend.onrender.com
 ```
