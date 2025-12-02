@@ -1,12 +1,42 @@
-# React + Vite
+# Bulkwala Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the Bulkwala e-commerce platform built with React and Vite.
 
-Currently, two official plugins are available:
+## Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm run dev`
 
-## Expanding the ESLint configuration
+## Deployment
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This application is configured for deployment on Vercel. The [vercel.json](vercel.json) file contains the deployment configuration.
+
+## Features
+
+- User authentication (login/signup)
+- Product browsing and search
+- Shopping cart functionality
+- Wishlist management
+- Order placement and tracking
+- Admin dashboard for product management
+- Seller dashboard for inventory management
+- Video support for product displays
+- Responsive design for all devices
+
+## Available Scripts
+
+In the project directory, you can run:
+
+- `npm run dev` - Runs the app in development mode
+- `npm run build` - Builds the app for production
+- `npm run preview` - Previews the production build locally
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
+```
