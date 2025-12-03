@@ -133,20 +133,7 @@ export default function Navbar() {
       typeof queryInput === "function" ? queryInput(searchQuery) : queryInput;
     if (!query.trim()) return;
 
-    const keyword = query.toLowerCase().replace(/\s+/g, "");
-    const filtered = products.filter((p) => {
-      const normalize = (str) => (str || "").toLowerCase().replace(/\s+/g, "");
-      return (
-        normalize(p.title).includes(keyword) ||
-        normalize(p.description).includes(keyword) ||
-        normalize(p.category?.name).includes(keyword) ||
-        normalize(p.subcategory?.name).includes(keyword)
-      );
-    });
-
-    if (filtered.length > 0) toast.success(`Found ${filtered.length} results`);
-    else toast.info("No matches found");
-
+    // Store the search term in recent searches
     const updated = [query, ...suggestions.filter((i) => i !== query)].slice(
       0,
       5
@@ -156,6 +143,7 @@ export default function Navbar() {
 
     setSuggestions([]); // ✅ close dropdown
     navigate(`/products?search=${encodeURIComponent(query)}`);
+    // Note: Actual search results will be shown on the Products page after backend query
   };
 
   // ✅ Debounce function for search
@@ -180,24 +168,21 @@ export default function Navbar() {
         return;
       }
 
-      // Filter products based on query
-      const keyword = query.toLowerCase().replace(/\s+/g, "");
-      const matched = products
-        .filter((p) => {
-          const normalize = (s) => (s || "").toLowerCase().replace(/\s+/g, "");
-          return (
-            normalize(p.title).includes(keyword) ||
-            normalize(p.description).includes(keyword) ||
-            normalize(p.category?.name).includes(keyword) ||
-            normalize(p.subcategory?.name).includes(keyword)
-          );
-        })
-        .slice(0, 5)
-        .map((p) => p.title);
-
-      setSuggestions([...new Set([...matched, ...suggestions])].slice(0, 5));
+      // Show recent searches instead of live filtering to avoid inconsistency
+      // with backend search results
+      if (!query.trim()) {
+        setSuggestions(suggestions.slice(0, 5));
+        return;
+      }
+      
+      // For live search suggestions, we'll just show recent searches that match
+      const matched = suggestions
+        .filter(suggestion => suggestion.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 5);
+      
+      setSuggestions(matched);
     }, 300),
-    [products, suggestions]
+    [suggestions]
   );
 
   const handleInputChange = (e) => {
@@ -314,7 +299,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={handleInputChange}
                 onFocus={() => {
-                  if (searchQuery.trim()) setSuggestions(recentSearches);
+                  if (searchQuery.trim()) setSuggestions(suggestions);
                 }}
                 onBlur={() => setTimeout(() => setSuggestions([]), 150)}
               />
@@ -496,7 +481,7 @@ export default function Navbar() {
               value={searchQuery}
               onChange={handleInputChange}
               onFocus={() => {
-                if (searchQuery.trim()) setSuggestions(recentSearches);
+                if (searchQuery.trim()) setSuggestions(suggestions);
               }}
               onBlur={() => setTimeout(() => setSuggestions([]), 150)}
             />
