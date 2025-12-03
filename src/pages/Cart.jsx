@@ -399,6 +399,16 @@ const Cart = () => {
               ₹{(shippingPrice || 0).toFixed(2)}
             </span>
           </div>
+          {itemsPrice < 279 && itemsPrice > 0 && (
+            <div className="text-xs sm:text-sm text-blue-600 italic">
+              Add ₹{(279 - itemsPrice).toFixed(2)} more to get FREE shipping!
+            </div>
+          )}
+          {itemsPrice >= 279 && itemsPrice > 0 && (
+            <div className="text-xs sm:text-sm text-green-600 font-medium">
+              🎉 Free shipping on this order!
+            </div>
+          )}
 
           {/* Show only one discount — priority: Coupon > Referral > Flash */}
           {discount > 0 ? (
