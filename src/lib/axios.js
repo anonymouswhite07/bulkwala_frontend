@@ -19,11 +19,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Call refresh endpoint — COOKIE will be used automatically
-        await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/users/refresh-token`,
-          {},
-          { withCredentials: true }
-        );
+        await axiosInstance.post("/api/users/refresh-token", {});
 
         // Retry original request
         return axiosInstance(originalRequest);
