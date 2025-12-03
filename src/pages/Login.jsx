@@ -41,7 +41,10 @@ const Login = () => {
 
     if (res.success) {
       toast.success("Login successful!");
-      navigate("/");
+      // Force a small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
     } else {
       toast.error(res.error);
 
@@ -67,7 +70,10 @@ const Login = () => {
     const res = await verifyOtp({ phone, otp });
     if (res.success) {
       toast.success("Logged in successfully!");
-      navigate("/");
+      // Force a small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
     } else toast.error(res.error);
   };
 
@@ -163,8 +169,9 @@ const Login = () => {
                 <Button
                   type="submit"
                   className="w-full bg-[#02066F] text-white"
+                  disabled={form.formState.isSubmitting}
                 >
-                  Login
+                  {form.formState.isSubmitting ? "Logging in..." : "Login"}
                 </Button>
                 {/* Forgot Password Link */}
                 <div className="text-center">
@@ -218,6 +225,7 @@ const Login = () => {
                 <Button
                   onClick={handleSendOtp}
                   className="w-full bg-[#02066F] text-white"
+                  disabled={!phone || phone.length < 10}
                 >
                   Send OTP
                 </Button>
@@ -225,6 +233,7 @@ const Login = () => {
                 <Button
                   onClick={handleVerifyOtp}
                   className="w-full bg-[#02066F] text-white"
+                  disabled={!otp || otp.length < 4}
                 >
                   Verify & Login
                 </Button>
