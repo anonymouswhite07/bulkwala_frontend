@@ -15,6 +15,20 @@ export const registerSellerService = async (sellerData) => {
 
 export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
+  
+  // For Safari compatibility, try to generate a recovery token
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+    try {
+      const recoveryRes = await axiosInstance.post("/api/users/generate-recovery-token", {}, {
+        withCredentials: true
+      });
+      // Store recovery token in localStorage for future use
+      localStorage.setItem('recoveryToken', recoveryRes.data.data.recoveryToken);
+    } catch (error) {
+      console.warn('Failed to generate recovery token for Safari:', error);
+    }
+  }
+  
   return res.data.data;
 };
 
@@ -27,6 +41,20 @@ export const sendOtpService = async (phone) => {
 // Verify OTP
 export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
+  
+  // For Safari compatibility, try to generate a recovery token
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+    try {
+      const recoveryRes = await axiosInstance.post("/api/users/generate-recovery-token", {}, {
+        withCredentials: true
+      });
+      // Store recovery token in localStorage for future use
+      localStorage.setItem('recoveryToken', recoveryRes.data.data.recoveryToken);
+    } catch (error) {
+      console.warn('Failed to generate recovery token for Safari:', error);
+    }
+  }
+  
   return res.data.data; // returns user
 };
 
@@ -78,6 +106,8 @@ export const resendVerificationService = async (userid) => {
 
 export const logoutService = async () => {
   await axiosInstance.post("/api/users/logout");
+  // Clear recovery token on logout
+  localStorage.removeItem('recoveryToken');
   return { success: true };
 };
 
