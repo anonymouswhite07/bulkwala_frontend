@@ -16,17 +16,10 @@ export const registerSellerService = async (sellerData) => {
 export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
   
-  // For Safari compatibility, try to generate a recovery token
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-    try {
-      const recoveryRes = await axiosInstance.post("/api/users/generate-recovery-token", {}, {
-        withCredentials: true
-      });
-      // Store recovery token in localStorage for future use
-      localStorage.setItem('recoveryToken', recoveryRes.data.data.recoveryToken);
-    } catch (error) {
-      console.warn('Failed to generate recovery token for Safari:', error);
-    }
+  // For Safari compatibility, store the recovery token from login response
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data.recoveryToken) {
+    // Store recovery token in localStorage for future use
+    localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
   }
   
   return res.data.data;
@@ -42,17 +35,10 @@ export const sendOtpService = async (phone) => {
 export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
   
-  // For Safari compatibility, try to generate a recovery token
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-    try {
-      const recoveryRes = await axiosInstance.post("/api/users/generate-recovery-token", {}, {
-        withCredentials: true
-      });
-      // Store recovery token in localStorage for future use
-      localStorage.setItem('recoveryToken', recoveryRes.data.data.recoveryToken);
-    } catch (error) {
-      console.warn('Failed to generate recovery token for Safari:', error);
-    }
+  // For Safari compatibility, store the recovery token from login response
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data.recoveryToken) {
+    // Store recovery token in localStorage for future use
+    localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
   }
   
   return res.data.data; // returns user
