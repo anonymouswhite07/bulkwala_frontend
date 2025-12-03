@@ -3,6 +3,9 @@ import axios from "axios";
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:5000",
   withCredentials: true, // IMPORTANT: allows sending cookies
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
 // No request interceptor needed (cookies auto included)
@@ -19,7 +22,9 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Call refresh endpoint — COOKIE will be used automatically
-        await axiosInstance.post("/api/users/refresh-token", {});
+        await axiosInstance.post("/api/users/refresh-token", {}, {
+          withCredentials: true
+        });
 
         // Retry original request
         return axiosInstance(originalRequest);
