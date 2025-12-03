@@ -30,6 +30,9 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (err) {
         // Refresh failed → logout
+        // Clear auth state on refresh failure
+        const { logout } = useAuthStore.getState();
+        logout();
         return Promise.reject(err);
       }
     }

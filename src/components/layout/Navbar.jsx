@@ -543,6 +543,7 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+              onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </NavLink>
@@ -553,6 +554,7 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+              onClick={() => setMobileMenuOpen(false)}
             >
               Products
             </NavLink>
@@ -563,6 +565,7 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+              onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
             </NavLink>
@@ -573,13 +576,14 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+              onClick={() => setMobileMenuOpen(false)}
             >
               About Us
             </NavLink>
             {/* ---- MOBILE MENU EXTRA OPTIONS ---- */}
             <div className="flex flex-col gap-4 mt-5 md:hidden">
               {/* ❤️ Wishlist */}
-              <Link to="/wishlist" className="flex items-center gap-3">
+              <Link to="/wishlist" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
                 <ion-icon
                   name="heart-outline"
                   class="text-2xl text-[#02066F]"
@@ -595,7 +599,7 @@ export default function Navbar() {
               </Link>
 
               {/* 🛒 Cart */}
-              <Link to="/cart" className="flex items-center gap-3">
+              <Link to="/cart" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
                 <ion-icon
                   name="cart-outline"
                   class="text-2xl text-[#02066F]"
@@ -614,6 +618,7 @@ export default function Navbar() {
                   <Link
                     to="/profile"
                     className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     <ion-icon
                       name="person-circle-outline"
@@ -626,6 +631,7 @@ export default function Navbar() {
                     <Link
                       to="/my-orders"
                       className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
                       <ion-icon name="bag-outline" class="text-2xl"></ion-icon>
                       My Orders
@@ -636,6 +642,7 @@ export default function Navbar() {
                     <Link
                       to={`/${user.role}`}
                       className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
                       <ion-icon name="grid-outline" class="text-2xl"></ion-icon>
                       Manage Dashboard
