@@ -17,12 +17,13 @@ export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
   
   // For Safari compatibility, store the recovery token from login response
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data.recoveryToken) {
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data?.recoveryToken) {
     // Store recovery token in localStorage for future use
     localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
   }
   
-  return res.data.data;
+  // Return the user object (which is inside the data object)
+  return res.data.data.user || res.data.data;
 };
 
 // Send OTP
@@ -36,12 +37,13 @@ export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
   
   // For Safari compatibility, store the recovery token from login response
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data.recoveryToken) {
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data?.recoveryToken) {
     // Store recovery token in localStorage for future use
     localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
   }
   
-  return res.data.data; // returns user
+  // Return the user object (which is inside the data object)
+  return res.data.data.user || res.data.data; // returns user
 };
 
 export const updateShippingAddressService = async ({ address, index }) => {
