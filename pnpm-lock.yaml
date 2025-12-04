@@ -86,6 +86,12 @@ importers:
       tailwindcss:
         specifier: ^4.1.13
         version: 4.1.13
+<<<<<<< HEAD
+=======
+      vite:
+        specifier: ^7.1.6
+        version: 7.1.6(jiti@2.5.1)(lightningcss@1.30.1)
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       zod:
         specifier: ^4.1.11
         version: 4.1.11
@@ -120,9 +126,12 @@ importers:
       tw-animate-css:
         specifier: ^1.3.8
         version: 1.3.8
+<<<<<<< HEAD
       vite:
         specifier: ^7.1.6
         version: 7.1.6(jiti@2.5.1)(lightningcss@1.30.1)
+=======
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
 packages:
 

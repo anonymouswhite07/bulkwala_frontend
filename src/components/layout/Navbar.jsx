@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from "react";
+=======
+import React, { useState, useEffect, useRef, useCallback } from "react";
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "@/store/auth.store";
 import useCartStore from "@/store/cart.store";
@@ -8,6 +12,69 @@ import { useOfferStore } from "@/store/offer.store";
 
 import { toast } from "sonner";
 
+<<<<<<< HEAD
+=======
+// ✅ Enhanced localStorage handler for iOS Safari compatibility
+const StorageManager = {
+  isLocalStorageAvailable: () => {
+    try {
+      const testKey = "__storage_test__";
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+  
+  getItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        console.warn("localStorage getItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      return window.__fallbackStorage?.[key];
+    }
+    return null;
+  },
+  
+  setItem: (key, value) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.setItem(key, value);
+        return;
+      } catch (e) {
+        console.warn("localStorage setItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      window.__fallbackStorage = window.__fallbackStorage || {};
+      window.__fallbackStorage[key] = value;
+    }
+  },
+  
+  removeItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.removeItem(key);
+        return;
+      } catch (e) {
+        console.warn("localStorage removeItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined' && window.__fallbackStorage) {
+      delete window.__fallbackStorage[key];
+    }
+  }
+};
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 export default function Navbar() {
   const { user, logout, checkauthstatus } = useAuthStore();
   const { totalItems, fetchCart } = useCartStore();
@@ -18,15 +85,21 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [listening, setListening] = useState(false);
+<<<<<<< HEAD
   const [suggestions, setSuggestions] = useState([]);
   const [recentSearches, setRecentSearches] = useState(
     JSON.parse(localStorage.getItem("recentSearches") || "[]")
+=======
+  const [suggestions, setSuggestions] = useState(
+    JSON.parse(StorageManager.getItem("recentSearches") || "[]")
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   );
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // ✅ New state for hamburger
   const dropdownRef = useRef();
   const searchRef = useRef();
   const suggestionRef = useRef();
+<<<<<<< HEAD
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,6 +124,31 @@ export default function Navbar() {
   }, [user]); // fetchCart and fetchWishlist are stable from zustand stores
 
   // ✅ Close dropdown when clicking outside
+=======
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Fetch products once on mount for search
+  useEffect(() => {
+    fetchProducts({ limit: 100 }); // ✅ Reduced from 1000 to 100 for performance
+  }, [fetchProducts]);
+
+  // ✅ Fetch active offer
+  useEffect(() => {
+    fetchActiveOffer();
+  }, [fetchActiveOffer]);
+
+  // ✅ Fetch wishlist and cart counts
+  useEffect(() => {
+    if (user?._id) {
+      fetchWishlist();
+      fetchCart();
+    }
+  }, [user, fetchWishlist, fetchCart]);
+
+  // ✅ Close dropdowns when clicking outside
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -59,20 +157,117 @@ export default function Navbar() {
       if (
         suggestionRef.current &&
         !suggestionRef.current.contains(event.target) &&
+<<<<<<< HEAD
+=======
+        searchRef.current &&
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
         !searchRef.current.contains(event.target)
       ) {
         setSuggestions([]);
       }
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+<<<<<<< HEAD
   // ✅ Clear suggestions when route changes
   useEffect(() => {
     setSuggestions([]);
     setMobileMenuOpen(false);
   }, [location.pathname]);
+=======
+  const performSearch = (queryInput) => {
+    const query =
+      typeof queryInput === "function" ? queryInput(searchQuery) : queryInput;
+    if (!query.trim()) return;
+
+    // Store the search term in recent searches
+    const updated = [query, ...suggestions.filter((i) => i !== query)].slice(
+      0,
+      5
+    );
+    setSuggestions(updated);
+    StorageManager.setItem("recentSearches", JSON.stringify(updated));
+
+    setSuggestions([]); // ✅ close dropdown
+    navigate(`/products?search=${encodeURIComponent(query)}`);
+    // Note: Actual search results will be shown on the Products page after backend query
+  };
+
+  // ✅ Debounce function for search
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  // ✅ Live search as user types with debouncing
+  const handleLiveSearch = useCallback(
+    debounce((query) => {
+      // If query is empty, show recent searches
+      if (!query.trim()) {
+        setSuggestions(suggestions.slice(0, 5));
+        return;
+      }
+
+      // Show recent searches instead of live filtering to avoid inconsistency
+      // with backend search results
+      if (!query.trim()) {
+        setSuggestions(suggestions.slice(0, 5));
+        return;
+      }
+      
+      // For live search suggestions, we'll just show recent searches that match
+      const matched = suggestions
+        .filter(suggestion => suggestion.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 5);
+      
+      setSuggestions(matched);
+    }, 300),
+    [suggestions]
+  );
+
+  const handleInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    handleLiveSearch(query);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    performSearch(searchQuery);
+    setSuggestions([]);
+  };
+
+  // ✅ Logout
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      toast.success("Logged out successfully!");
+      navigate("/login");
+    } else {
+      toast.error(result.error || "Logout failed.");
+    }
+    setDropdownOpen(false);
+  };
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   // ✅ Voice Search
   const handleVoiceSearch = () => {
@@ -115,6 +310,7 @@ export default function Navbar() {
     }
   };
 
+<<<<<<< HEAD
   // ✅ Search logic
   const performSearch = (queryInput) => {
     const query =
@@ -191,6 +387,8 @@ export default function Navbar() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
+=======
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   return (
     <>
       {/* 🔥 Flash Offer Banner */}
@@ -232,12 +430,18 @@ export default function Navbar() {
                 placeholder="Search Your Products Here"
                 className="bg-transparent flex-1 outline-none text-sm md:text-base"
                 value={searchQuery}
+<<<<<<< HEAD
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   if (e.target.value.trim()) setSuggestions(recentSearches);
                 }}
                 onFocus={() => {
                   if (searchQuery.trim()) setSuggestions(recentSearches);
+=======
+                onChange={handleInputChange}
+                onFocus={() => {
+                  if (searchQuery.trim()) setSuggestions(suggestions);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 }}
                 onBlur={() => setTimeout(() => setSuggestions([]), 150)}
               />
@@ -249,7 +453,10 @@ export default function Navbar() {
                 onClick={handleVoiceSearch}
               ></ion-icon>
             </form>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             {/* 🔽 Suggestion Dropdown */}
             {suggestions.length > 0 && (
               <div
@@ -418,6 +625,7 @@ export default function Navbar() {
               placeholder="Search Your Products"
               className="bg-transparent flex-1 outline-none text-base"
               value={searchQuery}
+<<<<<<< HEAD
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 if (e.target.value.trim()) setSuggestions(recentSearches);
@@ -425,6 +633,13 @@ export default function Navbar() {
               onFocus={() => {
                 if (searchQuery.trim()) setSuggestions(recentSearches);
               }}
+=======
+              onChange={handleInputChange}
+              onFocus={() => {
+                if (searchQuery.trim()) setSuggestions(suggestions);
+              }}
+              onBlur={() => setTimeout(() => setSuggestions([]), 150)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             />
 
             <ion-icon
@@ -469,6 +684,10 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+<<<<<<< HEAD
+=======
+              onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             >
               Home
             </NavLink>
@@ -479,6 +698,10 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+<<<<<<< HEAD
+=======
+              onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             >
               Products
             </NavLink>
@@ -489,6 +712,10 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+<<<<<<< HEAD
+=======
+              onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             >
               Contact Us
             </NavLink>
@@ -499,13 +726,21 @@ export default function Navbar() {
                   isActive ? "underline" : "text-[#02066F] hover:underline"
                 }`
               }
+<<<<<<< HEAD
+=======
+              onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             >
               About Us
             </NavLink>
             {/* ---- MOBILE MENU EXTRA OPTIONS ---- */}
             <div className="flex flex-col gap-4 mt-5 md:hidden">
               {/* ❤️ Wishlist */}
+<<<<<<< HEAD
               <Link to="/wishlist" className="flex items-center gap-3">
+=======
+              <Link to="/wishlist" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 <ion-icon
                   name="heart-outline"
                   class="text-2xl text-[#02066F]"
@@ -521,7 +756,11 @@ export default function Navbar() {
               </Link>
 
               {/* 🛒 Cart */}
+<<<<<<< HEAD
               <Link to="/cart" className="flex items-center gap-3">
+=======
+              <Link to="/cart" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 <ion-icon
                   name="cart-outline"
                   class="text-2xl text-[#02066F]"
@@ -540,6 +779,10 @@ export default function Navbar() {
                   <Link
                     to="/profile"
                     className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+<<<<<<< HEAD
+=======
+                    onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                   >
                     <ion-icon
                       name="person-circle-outline"
@@ -552,6 +795,10 @@ export default function Navbar() {
                     <Link
                       to="/my-orders"
                       className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+<<<<<<< HEAD
+=======
+                      onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                     >
                       <ion-icon name="bag-outline" class="text-2xl"></ion-icon>
                       My Orders
@@ -562,6 +809,10 @@ export default function Navbar() {
                     <Link
                       to={`/${user.role}`}
                       className="flex items-center gap-3 text-[#02066F] text-lg font-medium"
+<<<<<<< HEAD
+=======
+                      onClick={() => setMobileMenuOpen(false)}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                     >
                       <ion-icon name="grid-outline" class="text-2xl"></ion-icon>
                       Manage Dashboard

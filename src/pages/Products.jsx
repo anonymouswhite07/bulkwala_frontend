@@ -18,11 +18,19 @@ const Products = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const subcategoryFromURL = params.get("subcategory");
+<<<<<<< HEAD
+=======
+  const searchFromURL = params.get("search"); // ✅ Extract search parameter from URL
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   const [filters, setFilters] = useState({
     category: "",
     subcategory: subcategoryFromURL || "",
+<<<<<<< HEAD
     search: "",
+=======
+    search: searchFromURL || "", // ✅ Initialize search filter from URL
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     minPrice: 0,
     maxPrice: 10000,
     page: 1,
@@ -37,12 +45,23 @@ const Products = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // fetchCategories is stable from zustand store
 
+<<<<<<< HEAD
   // ✅ Update filter when user navigates with ?subcategory=Name
   useEffect(() => {
     if (subcategoryFromURL) {
       setFilters((prev) => ({ ...prev, subcategory: subcategoryFromURL }));
     }
   }, [subcategoryFromURL]);
+=======
+  // ✅ Update filters when user navigates with URL parameters
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      subcategory: subcategoryFromURL || "",
+      search: searchFromURL || "" // ✅ Update search filter from URL
+    }));
+  }, [subcategoryFromURL, searchFromURL]); // ✅ Add searchFromURL as dependency
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   // Fetch products when filters change
   useEffect(() => {

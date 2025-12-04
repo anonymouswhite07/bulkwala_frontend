@@ -51,6 +51,25 @@ const Cart = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // fetchCart is stable from zustand store
 
+<<<<<<< HEAD
+=======
+  // Add visibility change listener to refresh cart when user returns to tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Refresh cart when user returns to the tab
+        fetchCart();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchCart]);
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   // ⭐ Auto-scroll for BUY NOW product
   useEffect(() => {
     if (buyNowProductId) {
@@ -71,9 +90,14 @@ const Cart = () => {
   useEffect(() => {
     fetchActiveOffer();
   }, []);
+<<<<<<< HEAD
   // ✅ Loading state - Show loading indicator while cart is initializing
   // Added extra check for cartInitialized to handle iOS Safari caching issues
   if (isLoading || !isFetched || !cartInitialized) {
+=======
+  // ✅ Loading state
+  if (isLoading || !isFetched) {
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     return (
       <div className="min-h-screen flex justify-center items-center text-gray-600 text-base sm:text-lg">
         Loading cart...
@@ -312,6 +336,7 @@ const Cart = () => {
                         onChange={(e) => {
                           const raw = e.target.value;
                           let newQty = parseInt(raw) || 1;
+<<<<<<< HEAD
 
                           // 💥 Detect increment attempt
                           const isIncrement = newQty > item.quantity;
@@ -352,22 +377,61 @@ const Cart = () => {
                           handleUpdateQuantity(productId, newQty);
                         }}
                         className="w-16 text-center border border-gray-300 rounded-md shadow-sm text-sm"
+=======
+                          
+                          // iOS Safari fix: Ensure value is within bounds
+                          if (newQty < 1) newQty = 1;
+                          if (newQty > 5) newQty = 5;
+                          
+                          // Update the input field directly to prevent iOS Safari issues
+                          e.target.value = newQty;
+                          
+                          handleUpdateQuantity(productId, newQty);
+                        }}
+                        onBlur={(e) => {
+                          // Additional validation on blur
+                          const value = parseInt(e.target.value) || 1;
+                          if (value < 1) e.target.value = 1;
+                          if (value > 5) e.target.value = 5;
+                        }}
+                        className="w-16 text-center border border-gray-300 rounded-md shadow-sm text-sm touch-manipulation"
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                         disabled={isUpdating || product?.stock === 0}
                         title={
                           product?.stock === 0
                             ? "Out of stock"
                             : `Max: ${product?.stock || "N/A"}`
                         }
+<<<<<<< HEAD
+=======
+                        // iOS Safari specific attributes
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                       />
                       <Button
                         variant="destructive"
                         onClick={() => handleRemoveItem(productId)}
+<<<<<<< HEAD
                         disabled={isUpdating}
                         className="text-sm sm:text-base px-3 sm:px-4"
+=======
+                        onTouchEnd={(e) => {
+                          // Prevent ghost click on touch devices
+                          e.preventDefault();
+                          handleRemoveItem(productId);
+                        }}
+                        disabled={isUpdating}
+                        className="text-sm sm:text-base px-3 sm:px-4 touch-manipulation"
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                       >
                         Remove
                       </Button>
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                   </>
                 )}
               </div>
@@ -398,6 +462,19 @@ const Cart = () => {
               ₹{(shippingPrice || 0).toFixed(2)}
             </span>
           </div>
+<<<<<<< HEAD
+=======
+          {itemsPrice < 279 && itemsPrice > 0 && (
+            <div className="text-xs sm:text-sm text-blue-600 italic">
+              Add ₹{(279 - itemsPrice).toFixed(2)} more to get FREE shipping!
+            </div>
+          )}
+          {itemsPrice >= 279 && itemsPrice > 0 && (
+            <div className="text-xs sm:text-sm text-green-600 font-medium">
+              🎉 Free shipping on this order!
+            </div>
+          )}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
           {/* Show only one discount — priority: Coupon > Referral > Flash */}
           {discount > 0 ? (

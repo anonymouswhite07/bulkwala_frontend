@@ -40,6 +40,18 @@ export default function HomePage() {
         <RecentProductsCarousel />
       </section>
 
+<<<<<<< HEAD
+=======
+      {/* 🔹 Free Shipping Banner */}
+      <section className="max-w-7xl mx-auto px-4 py-4">
+        <img 
+          src="/assets/free_shipping_297.png" 
+          alt="Free Shipping on orders above ₹297" 
+          className="w-full h-auto rounded-lg shadow-md"
+        />
+      </section>
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       {/* 🔹 Promo Section */}
       <section className="max-w-7xl mx-auto">
         <PromoSection />

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { axiosInstance } from "@/lib/axios";
+=======
+import { axiosInstance, axiosRefresh } from "@/lib/axios";
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
 export const registerService = async (userData) => {
   const res = await axiosInstance.post("/api/users/register", userData);
@@ -15,7 +19,13 @@ export const registerSellerService = async (sellerData) => {
 
 export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
+<<<<<<< HEAD
   return res.data.data;
+=======
+  
+  // Return the user object
+  return res.data.data.user || res.data.data;
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 };
 
 // Send OTP
@@ -27,21 +37,35 @@ export const sendOtpService = async (phone) => {
 // Verify OTP
 export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
+<<<<<<< HEAD
   return res.data.data; // returns user
+=======
+  
+  // Return the user object
+  return res.data.data.user || res.data.data;
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 };
 
 export const updateShippingAddressService = async ({ address, index }) => {
   const res = await axiosInstance.put(
     "/api/users/address",
     { address, index },
+<<<<<<< HEAD
     { withCredentials: true }
+=======
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   );
   return res.data.data;
 };
 
 export const deleteAddressService = async (index) => {
   const res = await axiosInstance.delete(`/api/users/address/${index}`, {
+<<<<<<< HEAD
     withCredentials: true,
+=======
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   });
   return res.data.data;
 };
@@ -49,7 +73,11 @@ export const deleteAddressService = async (index) => {
 export const checkauthService = async () => {
   try {
     const res = await axiosInstance.get("/api/users/profile", {
+<<<<<<< HEAD
       withCredentials: true,
+=======
+      withCredentials: true, // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     });
     return res.data.data;
   } catch (error) {
@@ -77,14 +105,30 @@ export const resendVerificationService = async (userid) => {
 };
 
 export const logoutService = async () => {
+<<<<<<< HEAD
   await axiosInstance.post("/api/users/logout");
   return { success: true };
+=======
+  try {
+    await axiosInstance.post("/api/users/logout", {}, {
+      withCredentials: true // Explicit credentials for cross-browser compatibility
+    });
+  } catch (error) {
+    console.log("Error during logout:", error);
+  } finally {
+    return { success: true };
+  }
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 };
 
 export const forgotPasswordService = async (email) => {
   const res = await axiosInstance.post("/api/users/forget-password", { email });
   return res.data;
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 export const changePasswordService = async (email) => {
   const res = await axiosInstance.post("/api/users/change-password", { email });
   return res.data;
@@ -99,14 +143,22 @@ export const resetPasswordService = async (credentials) => {
   return res.data;
 };
 
+<<<<<<< HEAD
 //  Apply for seller
 export const applySellerService = async (sellerData) => {
   const res = await axiosInstance.post("/api/users/apply-seller", sellerData, {
     withCredentials: true,
+=======
+// Apply for seller
+export const applySellerService = async (sellerData) => {
+  const res = await axiosInstance.post("/api/users/apply-seller", sellerData, {
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   });
   return res.data.data;
 };
 
+<<<<<<< HEAD
 //  Fetch all users (admin only)
 export const getAllUsersService = async () => {
   const res = await axiosInstance.get("/api/users", { withCredentials: true });
@@ -114,11 +166,26 @@ export const getAllUsersService = async () => {
 };
 
 //  Approve pending seller
+=======
+// Fetch all users (admin only)
+export const getAllUsersService = async () => {
+  const res = await axiosInstance.get("/api/users", { 
+    withCredentials: true // Explicit credentials for cross-browser compatibility
+  });
+  return res.data.data;
+};
+
+// Approve pending seller
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 export const approveSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/approve/${userid}`,
     {},
+<<<<<<< HEAD
     { withCredentials: true }
+=======
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   );
   return res.data.data;
 };
@@ -128,11 +195,16 @@ export const rejectSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/reject/${userid}`,
     {},
+<<<<<<< HEAD
     { withCredentials: true }
+=======
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   );
   return res.data.data;
 };
 
+<<<<<<< HEAD
 //update profile
 export const updateProfileService = async (profileData) => {
   const res = await axiosInstance.put("/api/users/update", profileData, {
@@ -140,3 +212,12 @@ export const updateProfileService = async (profileData) => {
   });
   return res.data.data;
 };
+=======
+// Update profile
+export const updateProfileService = async (profileData) => {
+  const res = await axiosInstance.put("/api/users/update", profileData, {
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
+  });
+  return res.data.data;
+};
+>>>>>>> 460700d960a77f96500b74421728d156211c487a

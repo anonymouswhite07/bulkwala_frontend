@@ -55,8 +55,13 @@ const ShippingPolicy = () => {
           <CardTitle>3. Shipping Charges</CardTitle>
         </CardHeader>
         <CardContent className="space-y-1">
+<<<<<<< HEAD
           <p>Free Standard Shipping on orders above ₹999 (India).</p>
           <p>Orders below ₹999: Flat ₹49 shipping charge.</p>
+=======
+          <p>Free Standard Shipping on orders above ₹297 (India).</p>
+          <p>Orders below ₹297: Flat ₹50 shipping charge.</p>
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
           <p>Express Delivery (Metro Cities): ₹149 additional charge.</p>
           <p>
             International Shipping: Fees calculated at checkout based on

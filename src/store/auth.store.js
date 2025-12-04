@@ -369,4 +369,8 @@ export const useAuthStore = create((set, get) => ({
   },
 }));
 
+<<<<<<< HEAD
 export default useAuthStore;
+=======
+export default useAuthStore;
+>>>>>>> 460700d960a77f96500b74421728d156211c487a

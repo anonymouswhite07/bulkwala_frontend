@@ -13,6 +13,7 @@ import { getProducts } from "@/services/product.service";
 import { create } from "zustand";
 import useAuthStore from "./auth.store";
 
+<<<<<<< HEAD
 // ✅ Guest cart localStorage key
 const GUEST_CART_KEY = "guest_cart";
 
@@ -20,6 +21,75 @@ const GUEST_CART_KEY = "guest_cart";
 const getGuestCart = () => {
   try {
     const cart = localStorage.getItem(GUEST_CART_KEY);
+=======
+// ✅ Enhanced localStorage handler for iOS Safari compatibility
+const StorageManager = {
+  isLocalStorageAvailable: () => {
+    try {
+      const testKey = "__storage_test__";
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+  
+  getItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        console.warn("localStorage getItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      return window.__fallbackStorage?.[key];
+    }
+    return null;
+  },
+  
+  setItem: (key, value) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.setItem(key, value);
+        return;
+      } catch (e) {
+        console.warn("localStorage setItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      window.__fallbackStorage = window.__fallbackStorage || {};
+      window.__fallbackStorage[key] = value;
+    }
+  },
+  
+  removeItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.removeItem(key);
+        return;
+      } catch (e) {
+        console.warn("localStorage removeItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined' && window.__fallbackStorage) {
+      delete window.__fallbackStorage[key];
+    }
+  }
+};
+
+// ✅ Guest cart key
+const GUEST_CART_KEY = "guest_cart";
+
+// ✅ Helper functions for guest cart with enhanced iOS Safari compatibility
+const getGuestCart = () => {
+  try {
+    const cart = StorageManager.getItem(GUEST_CART_KEY);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     return cart ? JSON.parse(cart) : { items: [] };
   } catch {
     return { items: [] };
@@ -28,7 +98,11 @@ const getGuestCart = () => {
 
 const saveGuestCart = (cart) => {
   try {
+<<<<<<< HEAD
     localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
+=======
+    StorageManager.setItem(GUEST_CART_KEY, JSON.stringify(cart));
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Error saving guest cart:", error);
@@ -38,7 +112,11 @@ const saveGuestCart = (cart) => {
 
 const clearGuestCart = () => {
   try {
+<<<<<<< HEAD
     localStorage.removeItem(GUEST_CART_KEY);
+=======
+    StorageManager.removeItem(GUEST_CART_KEY);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Error clearing guest cart:", error);
@@ -235,7 +313,11 @@ const useCartStore = create((set, get) => ({
         flashDiscountPercent: cartData.flashDiscountPercent || 0,
 
         isLoading: false,
+<<<<<<< HEAD
         cartInitialized: true, // ⭐ FIX HERE - Always set to true
+=======
+        cartInitialized: true, // ⭐ FIX HERE
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       });
     } catch (error) {
       // ✅ Handle 404 as empty cart (not an error - normal for new users)
@@ -715,5 +797,8 @@ const useCartStore = create((set, get) => ({
 export default useCartStore;
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 460700d960a77f96500b74421728d156211c487a

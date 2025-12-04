@@ -25,12 +25,20 @@ const AddProductForm = ({ onSuccess }) => {
   const { subcategories, fetchSubcategories } = useSubcategoryStore();
 
   const [previewUrls, setPreviewUrls] = useState([]);
+<<<<<<< HEAD
+=======
+  const [videoPreviewUrls, setVideoPreviewUrls] = useState([]);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+<<<<<<< HEAD
+=======
+    getValues,
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     formState: { errors },
   } = useForm({
     resolver: zodResolver(productSchema),
@@ -40,12 +48,20 @@ const AddProductForm = ({ onSuccess }) => {
       description: "",
       price: "",
       discountPrice: "",
+<<<<<<< HEAD
       gstSlab: 18,
       stock: "",
       images: [],
       category: "",
       subcategory: "",
       tags: [],
+=======
+      stock: "",
+      category: "",
+      subcategory: "",
+      tags: [],
+      images: [],
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       isActive: true,
       isFeatured: false,
       sku: "",
@@ -53,7 +69,11 @@ const AddProductForm = ({ onSuccess }) => {
       genericName: "",
       manufacturerName: "",
       countryOfOrigin: "India",
+<<<<<<< HEAD
       video: null,
+=======
+      videos: [], // Changed from single video to array
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     },
   });
 
@@ -209,11 +229,16 @@ const AddProductForm = ({ onSuccess }) => {
           {/* Video Upload */}
           <div>
             <label className="block mb-1 text-sm text-gray-600">
+<<<<<<< HEAD
               Product Video (Single)
+=======
+              Product Videos (Multiple)
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
             </label>
             <Input
               type="file"
               accept="video/*"
+<<<<<<< HEAD
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) setValue("video", file, { shouldValidate: true });
@@ -222,6 +247,48 @@ const AddProductForm = ({ onSuccess }) => {
             {errors.video && (
               <p className="text-red-500">{errors.video.message}</p>
             )}
+=======
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files);
+                setValue("videos", files, { shouldValidate: true });
+                setVideoPreviewUrls(files.map((file) => URL.createObjectURL(file)));
+              }}
+            />
+            {errors.videos && (
+              <p className="text-red-500">{errors.videos.message}</p>
+            )}
+            
+            {/* Video Previews */}
+            <div className="mt-2 flex gap-2 flex-wrap">
+              {videoPreviewUrls.map((url, idx) => (
+                <div key={idx} className="relative">
+                  <video
+                    src={url}
+                    className="w-20 h-20 object-cover rounded border"
+                    muted
+                    preload="metadata"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newUrls = [...videoPreviewUrls];
+                      newUrls.splice(idx, 1);
+                      setVideoPreviewUrls(newUrls);
+                      
+                      const currentVideos = getValues("videos");
+                      const newVideos = [...currentVideos];
+                      newVideos.splice(idx, 1);
+                      setValue("videos", newVideos);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
           </div>
           {/* Images Upload */}
           <div>

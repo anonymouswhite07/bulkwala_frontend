@@ -41,7 +41,14 @@ const Login = () => {
 
     if (res.success) {
       toast.success("Login successful!");
+<<<<<<< HEAD
       navigate("/");
+=======
+      // Force a small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     } else {
       toast.error(res.error);
 
@@ -67,7 +74,14 @@ const Login = () => {
     const res = await verifyOtp({ phone, otp });
     if (res.success) {
       toast.success("Logged in successfully!");
+<<<<<<< HEAD
       navigate("/");
+=======
+      // Force a small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     } else toast.error(res.error);
   };
 
@@ -163,8 +177,14 @@ const Login = () => {
                 <Button
                   type="submit"
                   className="w-full bg-[#02066F] text-white"
+<<<<<<< HEAD
                 >
                   Login
+=======
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? "Logging in..." : "Login"}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 </Button>
                 {/* Forgot Password Link */}
                 <div className="text-center">
@@ -218,6 +238,10 @@ const Login = () => {
                 <Button
                   onClick={handleSendOtp}
                   className="w-full bg-[#02066F] text-white"
+<<<<<<< HEAD
+=======
+                  disabled={!phone || phone.length < 10}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 >
                   Send OTP
                 </Button>
@@ -225,6 +249,10 @@ const Login = () => {
                 <Button
                   onClick={handleVerifyOtp}
                   className="w-full bg-[#02066F] text-white"
+<<<<<<< HEAD
+=======
+                  disabled={!otp || otp.length < 4}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
                 >
                   Verify & Login
                 </Button>

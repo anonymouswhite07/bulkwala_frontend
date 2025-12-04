@@ -61,6 +61,20 @@ export const useProductStore = create((set) => ({
         Object.entries(productData).forEach(([key, value]) => {
           if (key === "images" && value?.length > 0) {
             Array.from(value).forEach((img) => formData.append("images", img));
+<<<<<<< HEAD
+=======
+          } else if (key === "videos" && value?.length > 0) {
+            // Handle multiple videos
+            Array.from(value).forEach((video) => formData.append("video", video));
+          } else if (key === "imagesToRemove" && Array.isArray(value)) {
+            value.forEach((img) => formData.append("imagesToRemove", img));
+          } else if (key === "videosToRemove" && Array.isArray(value)) {
+            value.forEach((vid) => formData.append("videosToRemove", vid));
+          } else if (key === "existingImages" && Array.isArray(value)) {
+            value.forEach((img) => formData.append("existingImages", img));
+          } else if (key === "existingVideos" && Array.isArray(value)) {
+            value.forEach((vid) => formData.append("existingVideos", vid));
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
           } else if (Array.isArray(value)) {
             value.forEach((v) => formData.append(key, v));
           } else if (value !== undefined && value !== null) {

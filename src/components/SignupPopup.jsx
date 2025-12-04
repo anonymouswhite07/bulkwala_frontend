@@ -23,13 +23,82 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 
+<<<<<<< HEAD
+=======
+// ✅ Enhanced localStorage handler for iOS Safari compatibility
+const StorageManager = {
+  isLocalStorageAvailable: () => {
+    try {
+      const testKey = "__storage_test__";
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+  
+  getItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        console.warn("localStorage getItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      return window.__fallbackStorage?.[key];
+    }
+    return null;
+  },
+  
+  setItem: (key, value) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.setItem(key, value);
+        return;
+      } catch (e) {
+        console.warn("localStorage setItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined') {
+      window.__fallbackStorage = window.__fallbackStorage || {};
+      window.__fallbackStorage[key] = value;
+    }
+  },
+  
+  removeItem: (key) => {
+    if (StorageManager.isLocalStorageAvailable()) {
+      try {
+        localStorage.removeItem(key);
+        return;
+      } catch (e) {
+        console.warn("localStorage removeItem failed:", e);
+      }
+    }
+    // Fallback to in-memory storage
+    if (typeof window !== 'undefined' && window.__fallbackStorage) {
+      delete window.__fallbackStorage[key];
+    }
+  }
+};
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 export default function SignupPopup() {
   const [open, setOpen] = useState(false);
   const { user, signup } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const firstTimerRef = useRef(null);
+<<<<<<< HEAD
   const repeatTimerRef = useRef(null);
+=======
+  
+  // Key for localStorage to track if popup has been shown
+  const POPUP_SHOWN_KEY = "signup_popup_shown";
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   const form = useForm({
     resolver: zodResolver(SignupSchema),
@@ -38,17 +107,34 @@ export default function SignupPopup() {
 
   useEffect(() => {
     if (firstTimerRef.current) clearTimeout(firstTimerRef.current);
+<<<<<<< HEAD
     if (repeatTimerRef.current) clearInterval(repeatTimerRef.current);
+=======
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
     const isAuthPage =
       location.pathname.includes("/login") ||
       location.pathname.includes("/signup") ||
       location.pathname.includes("/verify");
 
+<<<<<<< HEAD
     if (user?._id || isAuthPage) {
       setOpen(false);
       if (import.meta.NODE_ENV === "development") {
         console.log("Popup disabled (user logged in or on auth page)");
+=======
+    // Check if popup has already been shown
+    const hasBeenShown = StorageManager.getItem(POPUP_SHOWN_KEY) === "true";
+    
+    if (user?._id || isAuthPage || hasBeenShown) {
+      setOpen(false);
+      if (import.meta.NODE_ENV === "development") {
+        if (hasBeenShown) {
+          console.log("Popup disabled (already shown)");
+        } else {
+          console.log("Popup disabled (user logged in or on auth page)");
+        }
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       }
       return;
     }
@@ -56,11 +142,16 @@ export default function SignupPopup() {
     if (import.meta.NODE_ENV === "development") {
       console.log("Popup scheduled to open in 15 seconds...");
     }
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     firstTimerRef.current = setTimeout(() => {
       if (import.meta.NODE_ENV === "development") {
         console.log("Popup opened (15s delay)");
       }
       setOpen(true);
+<<<<<<< HEAD
 
       if (import.meta.NODE_ENV === "development") {
         console.log("Setting repeat popup every 2 minutes...");
@@ -83,13 +174,23 @@ export default function SignupPopup() {
           }
         }
       }, 120000);
+=======
+      
+      // Mark popup as shown in localStorage
+      StorageManager.setItem(POPUP_SHOWN_KEY, "true");
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     }, 15000);
 
     return () => {
       if (firstTimerRef.current) clearTimeout(firstTimerRef.current);
+<<<<<<< HEAD
       if (repeatTimerRef.current) clearInterval(repeatTimerRef.current);
       if (import.meta.NODE_ENV === "development") {
         console.log("Popup timers cleared");
+=======
+      if (import.meta.NODE_ENV === "development") {
+        console.log("Popup timer cleared");
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       }
     };
   }, [location, user]);

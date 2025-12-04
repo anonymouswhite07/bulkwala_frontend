@@ -26,10 +26,20 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
     category: "",
     subcategory: "",
     newImages: [],
+<<<<<<< HEAD
   });
 
   const [existingImages, setExistingImages] = useState([]);
   const [imagesToRemove, setImagesToRemove] = useState([]);
+=======
+    newVideos: [], // Add newVideos field
+  });
+
+  const [existingImages, setExistingImages] = useState([]);
+  const [existingVideos, setExistingVideos] = useState([]); // Add existingVideos state
+  const [imagesToRemove, setImagesToRemove] = useState([]);
+  const [videosToRemove, setVideosToRemove] = useState([]); // Add videosToRemove state
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
   const { products, editProduct } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
@@ -59,9 +69,18 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
         category: product.category?._id || "",
         subcategory: product.subcategory?._id || "",
         newImages: [],
+<<<<<<< HEAD
       });
       setExistingImages(product.images || []);
       setImagesToRemove([]);
+=======
+        newVideos: [], // Initialize newVideos
+      });
+      setExistingImages(product.images || []);
+      setExistingVideos(product.videos || []); // Set existing videos
+      setImagesToRemove([]);
+      setVideosToRemove([]); // Initialize videosToRemove
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     }
   }, [slug, open, products]);
 
@@ -72,12 +91,28 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
     setFormData((prev) => ({ ...prev, newImages: e.target.files }));
   };
 
+<<<<<<< HEAD
+=======
+  const handleVideoChange = (e) => {
+    setFormData((prev) => ({ ...prev, newVideos: e.target.files }));
+  };
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   const removeExistingImage = (index) => {
     const removed = existingImages[index];
     setImagesToRemove((prev) => [...prev, removed]);
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+<<<<<<< HEAD
+=======
+  const removeExistingVideo = (index) => {
+    const removed = existingVideos[index];
+    setVideosToRemove((prev) => [...prev, removed]);
+    setExistingVideos((prev) => prev.filter((_, i) => i !== index));
+  };
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -99,11 +134,25 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
 
       // Removed images
       imagesToRemove.forEach((img) => uploadData.append("imagesToRemove", img));
+<<<<<<< HEAD
+=======
+      
+      // Removed videos
+      videosToRemove.forEach((vid) => uploadData.append("videosToRemove", vid));
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
       // Existing images
       existingImages.forEach((imgUrl) =>
         uploadData.append("existingImages", imgUrl)
       );
+<<<<<<< HEAD
+=======
+      
+      // Existing videos
+      existingVideos.forEach((vidUrl) =>
+        uploadData.append("existingVideos", vidUrl)
+      );
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
       // New images
       if (formData.newImages?.length > 0) {
@@ -112,6 +161,16 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
         });
       }
 
+<<<<<<< HEAD
+=======
+      // New videos
+      if (formData.newVideos?.length > 0) {
+        Array.from(formData.newVideos).forEach((video) => {
+          uploadData.append("video", video);
+        });
+      }
+
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
       await editProduct(slug, uploadData);
       toast.success("Product updated successfully!");
       onSuccess?.();
@@ -337,6 +396,53 @@ export default function EditProductDialog({ open, onClose, slug, onSuccess }) {
                     className="w-full border-gray-300 focus:border-[#02066F] focus:ring-[#02066F]"
                   />
                 </div>
+<<<<<<< HEAD
+=======
+                
+                {/* Current Videos */}
+                {existingVideos.length > 0 && (
+                  <div className="col-span-2">
+                    <Label className="text-sm text-gray-700 mb-2 block">
+                      Current Videos
+                    </Label>
+                    <div className="flex flex-wrap gap-3">
+                      {existingVideos.map((vid, idx) => (
+                        <div key={idx} className="relative w-24 h-24">
+                          <video
+                            src={vid}
+                            className="w-full h-full object-cover rounded-md border"
+                            muted
+                            preload="metadata"
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full text-xs bg-red-600 hover:bg-red-700 text-white shadow-md"
+                            onClick={() => removeExistingVideo(idx)}
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Add Videos */}
+                <div className="col-span-2">
+                  <Label className="text-sm text-gray-700 mb-1 block">
+                    Add / Replace Videos
+                  </Label>
+                  <Input
+                    type="file"
+                    multiple
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="w-full border-gray-300 focus:border-[#02066F] focus:ring-[#02066F]"
+                  />
+                </div>
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
               </form>
             )}
           </div>

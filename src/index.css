@@ -267,4 +267,14 @@
   }
 }
 
+<<<<<<< HEAD
 
+=======
+/* ----------------------------
+   🔹 Touch Manipulation for iOS Safari
+   ---------------------------- */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a

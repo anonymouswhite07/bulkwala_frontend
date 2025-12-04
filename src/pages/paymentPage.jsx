@@ -412,6 +412,19 @@ const PaymentPage = () => {
                 )}
               </span>
             </div>
+<<<<<<< HEAD
+=======
+            {itemsPrice < 279 && itemsPrice > 0 && paymentMode !== "pickup" && (
+              <div className="text-xs sm:text-sm text-blue-600 italic">
+                Add ₹{(279 - itemsPrice).toFixed(2)} more to get FREE shipping!
+              </div>
+            )}
+            {itemsPrice >= 279 && itemsPrice > 0 && paymentMode !== "pickup" && (
+              <div className="text-xs sm:text-sm text-green-600 font-medium">
+                🎉 Free shipping on this order!
+              </div>
+            )}
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
 
             {/* ✅ Show only one discount type — priority: Coupon > Referral > Flash */}
             {cart?.discount > 0 ? (

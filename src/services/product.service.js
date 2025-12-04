@@ -35,10 +35,20 @@ export const createProduct = async (productData) => {
     });
   }
 
+<<<<<<< HEAD
   //  single video
   if (productData.video) {
     formData.append("video", productData.video);
   }
+=======
+  // multiple videos
+  if (productData.videos && productData.videos.length > 0) {
+    Array.from(productData.videos).forEach((video) => {
+      formData.append("video", video); // Keep "video" for backend compatibility
+    });
+  }
+  
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
   if (productData.sku && productData.sku.trim() !== "") {
     formData.append("sku", productData.sku.trim());
   }
@@ -72,7 +82,27 @@ export const deleteProduct = async (slug) => {
 };
 
 export const updateProduct = async (slug, productData) => {
+<<<<<<< HEAD
   const res = await axiosInstance.put(`/api/product/${slug}`, productData, {
+=======
+  const formData = new FormData();
+  
+  // Append all fields to formData
+  Object.entries(productData).forEach(([key, value]) => {
+    if (key === "images" && value?.length > 0) {
+      Array.from(value).forEach((img) => formData.append("images", img));
+    } else if (key === "videos" && value?.length > 0) {
+      // Handle multiple videos
+      Array.from(value).forEach((video) => formData.append("video", video));
+    } else if (Array.isArray(value)) {
+      value.forEach((v) => formData.append(key, v));
+    } else if (value !== undefined && value !== null) {
+      formData.append(key, value);
+    }
+  });
+
+  const res = await axiosInstance.put(`/api/product/${slug}`, formData, {
+>>>>>>> 460700d960a77f96500b74421728d156211c487a
     headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data.data;
