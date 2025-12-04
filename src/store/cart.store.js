@@ -13,15 +13,6 @@ import { getProducts } from "@/services/product.service";
 import { create } from "zustand";
 import useAuthStore from "./auth.store";
 
-<<<<<<< HEAD
-// ✅ Guest cart localStorage key
-const GUEST_CART_KEY = "guest_cart";
-
-// ✅ Helper functions for guest cart
-const getGuestCart = () => {
-  try {
-    const cart = localStorage.getItem(GUEST_CART_KEY);
-=======
 // ✅ Enhanced localStorage handler for iOS Safari compatibility
 const StorageManager = {
   isLocalStorageAvailable: () => {
@@ -89,7 +80,6 @@ const GUEST_CART_KEY = "guest_cart";
 const getGuestCart = () => {
   try {
     const cart = StorageManager.getItem(GUEST_CART_KEY);
->>>>>>> 460700d960a77f96500b74421728d156211c487a
     return cart ? JSON.parse(cart) : { items: [] };
   } catch {
     return { items: [] };
@@ -98,11 +88,7 @@ const getGuestCart = () => {
 
 const saveGuestCart = (cart) => {
   try {
-<<<<<<< HEAD
-    localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
-=======
     StorageManager.setItem(GUEST_CART_KEY, JSON.stringify(cart));
->>>>>>> 460700d960a77f96500b74421728d156211c487a
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Error saving guest cart:", error);
@@ -112,11 +98,7 @@ const saveGuestCart = (cart) => {
 
 const clearGuestCart = () => {
   try {
-<<<<<<< HEAD
-    localStorage.removeItem(GUEST_CART_KEY);
-=======
     StorageManager.removeItem(GUEST_CART_KEY);
->>>>>>> 460700d960a77f96500b74421728d156211c487a
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Error clearing guest cart:", error);
@@ -313,11 +295,7 @@ const useCartStore = create((set, get) => ({
         flashDiscountPercent: cartData.flashDiscountPercent || 0,
 
         isLoading: false,
-<<<<<<< HEAD
         cartInitialized: true, // ⭐ FIX HERE - Always set to true
-=======
-        cartInitialized: true, // ⭐ FIX HERE
->>>>>>> 460700d960a77f96500b74421728d156211c487a
       });
     } catch (error) {
       // ✅ Handle 404 as empty cart (not an error - normal for new users)
@@ -797,8 +775,4 @@ const useCartStore = create((set, get) => ({
 export default useCartStore;
 
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 460700d960a77f96500b74421728d156211c487a
