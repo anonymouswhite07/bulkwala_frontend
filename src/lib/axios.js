@@ -13,7 +13,25 @@ const isSafari = () => {
   return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 };
 
-// No request interceptor needed (cookies auto included)
+// Request interceptor to add recovery token for Safari
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // For Safari, add recovery token to requests if available
+    if (isSafari()) {
+      const recoveryToken = localStorage.getItem('recoveryToken');
+      if (recoveryToken && config.data) {
+        // Add recovery token to request body for refresh token requests
+        if (config.url?.includes('/refresh-token') && typeof config.data === 'object') {
+          config.data.recoveryToken = recoveryToken;
+        }
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Response interceptor — auto refresh token
 axiosInstance.interceptors.response.use(
