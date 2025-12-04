@@ -1,99 +1,45 @@
 import axios from "axios";
+import useAuthStore from "@/store/auth.store";
 
+// Main instance
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:5000",
-  withCredentials: true, // IMPORTANT: allows sending cookies
-  headers: {
-    'Content-Type': 'application/json',
-  }
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
 });
 
-// Detect Safari browser
-const isSafari = () => {
-  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-};
+// Secondary raw instance (no interceptors)
+const axiosRefresh = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:5000",
+  withCredentials: true,
+});
 
-// Request interceptor to add recovery token for Safari
-axiosInstance.interceptors.request.use(
-  (config) => {
-    // For Safari, add recovery token to requests if available
-    if (isSafari()) {
-      const recoveryToken = localStorage.getItem('recoveryToken');
-      if (recoveryToken && config.data) {
-        // Add recovery token to request body for refresh token requests
-        if (config.url?.includes('/refresh-token') && typeof config.data === 'object') {
-          config.data.recoveryToken = recoveryToken;
-        }
-      }
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor — auto refresh token
+// Interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const originalRequest = error.config;
 
-    // If access token expired (401)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if ((error.response?.status === 401 || error.response?.status === 419)
+        && !originalRequest._retry) {
+
       originalRequest._retry = true;
 
       try {
-        // For Safari, we need to use a different approach
-        if (isSafari()) {
-          // First, try the standard cookie-based refresh
-          try {
-            const refreshResponse = await axiosInstance.post("/api/users/refresh-token", {}, {
-              withCredentials: true
-            });
-            
-            // If successful, check if we got a new recovery token
-            if (refreshResponse.data?.data?.recoveryToken) {
-              localStorage.setItem('recoveryToken', refreshResponse.data.data.recoveryToken);
-            }
-          } catch (refreshError) {
-            // If cookie-based refresh fails, try recovery token approach
-            console.log("Safari cookie refresh failed, trying recovery token...");
-            
-            // Get recovery token from localStorage
-            const recoveryToken = localStorage.getItem('recoveryToken');
-            if (recoveryToken) {
-              const recoveryResponse = await axiosInstance.post("/api/users/refresh-token", { 
-                recoveryToken 
-              }, {
-                withCredentials: true
-              });
-              
-              // Clear used recovery token
-              localStorage.removeItem('recoveryToken');
-              
-              // Store new recovery token if provided
-              if (recoveryResponse.data?.data?.recoveryToken) {
-                localStorage.setItem('recoveryToken', recoveryResponse.data.data.recoveryToken);
-              }
-            } else {
-              throw new Error('No recovery token available');
-            }
-          }
-        } else {
-          // For non-Safari browsers, use standard cookie-based refresh
-          await axiosInstance.post("/api/users/refresh-token", {}, {
-            withCredentials: true
-          });
-        }
+        // refresh without interceptor
+        await axiosRefresh.post("/api/users/refresh-token");
 
-        // Retry original request
+        // retry request
         return axiosInstance(originalRequest);
+
       } catch (err) {
-        // Refresh failed → logout
-        // Clear auth state on refresh failure
+        console.log("Token refresh failed:", err);
+
+        // logout
         const { logout } = useAuthStore.getState();
         logout();
+
         return Promise.reject(err);
       }
     }

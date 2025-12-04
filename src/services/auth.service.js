@@ -16,12 +16,6 @@ export const registerSellerService = async (sellerData) => {
 export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
   
-  // For Safari compatibility, store the recovery token from login response
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data?.recoveryToken) {
-    // Store recovery token in localStorage for future use
-    localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
-  }
-  
   // Return the user object (which is inside the data object)
   return res.data.data.user || res.data.data;
 };
@@ -35,12 +29,6 @@ export const sendOtpService = async (phone) => {
 // Verify OTP
 export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
-  
-  // For Safari compatibility, store the recovery token from login response
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && res.data.data?.recoveryToken) {
-    // Store recovery token in localStorage for future use
-    localStorage.setItem('recoveryToken', res.data.data.recoveryToken);
-  }
   
   // Return the user object (which is inside the data object)
   return res.data.data.user || res.data.data; // returns user
@@ -93,16 +81,20 @@ export const resendVerificationService = async (userid) => {
 };
 
 export const logoutService = async () => {
-  await axiosInstance.post("/api/users/logout");
-  // Clear recovery token on logout
-  localStorage.removeItem('recoveryToken');
-  return { success: true };
+  try {
+    await axiosInstance.post("/api/users/logout");
+  } catch (error) {
+    console.log("Error during logout:", error);
+  } finally {
+    return { success: true };
+  }
 };
 
 export const forgotPasswordService = async (email) => {
   const res = await axiosInstance.post("/api/users/forget-password", { email });
   return res.data;
 };
+
 export const changePasswordService = async (email) => {
   const res = await axiosInstance.post("/api/users/change-password", { email });
   return res.data;
