@@ -16,7 +16,7 @@ export const registerSellerService = async (sellerData) => {
 export const loginService = async (credentials) => {
   const res = await axiosInstance.post("/api/users/login", credentials);
   
-  // Return the user object (which is inside the data object)
+  // Return the user object
   return res.data.data.user || res.data.data;
 };
 
@@ -30,22 +30,22 @@ export const sendOtpService = async (phone) => {
 export const verifyOtpService = async (data) => {
   const res = await axiosInstance.post("/api/users/verify-otp", data);
   
-  // Return the user object (which is inside the data object)
-  return res.data.data.user || res.data.data; // returns user
+  // Return the user object
+  return res.data.data.user || res.data.data;
 };
 
 export const updateShippingAddressService = async ({ address, index }) => {
   const res = await axiosInstance.put(
     "/api/users/address",
     { address, index },
-    { withCredentials: true }
+    { withCredentials: true } // Explicit credentials for Safari
   );
   return res.data.data;
 };
 
 export const deleteAddressService = async (index) => {
   const res = await axiosInstance.delete(`/api/users/address/${index}`, {
-    withCredentials: true,
+    withCredentials: true, // Explicit credentials for Safari
   });
   return res.data.data;
 };
@@ -53,7 +53,7 @@ export const deleteAddressService = async (index) => {
 export const checkauthService = async () => {
   try {
     const res = await axiosInstance.get("/api/users/profile", {
-      withCredentials: true,
+      withCredentials: true, // Explicit credentials for Safari
     });
     return res.data.data;
   } catch (error) {
@@ -82,7 +82,9 @@ export const resendVerificationService = async (userid) => {
 
 export const logoutService = async () => {
   try {
-    await axiosInstance.post("/api/users/logout");
+    await axiosInstance.post("/api/users/logout", {}, {
+      withCredentials: true // Explicit credentials for Safari
+    });
   } catch (error) {
     console.log("Error during logout:", error);
   } finally {
@@ -109,26 +111,28 @@ export const resetPasswordService = async (credentials) => {
   return res.data;
 };
 
-//  Apply for seller
+// Apply for seller
 export const applySellerService = async (sellerData) => {
   const res = await axiosInstance.post("/api/users/apply-seller", sellerData, {
-    withCredentials: true,
+    withCredentials: true, // Explicit credentials for Safari
   });
   return res.data.data;
 };
 
-//  Fetch all users (admin only)
+// Fetch all users (admin only)
 export const getAllUsersService = async () => {
-  const res = await axiosInstance.get("/api/users", { withCredentials: true });
+  const res = await axiosInstance.get("/api/users", { 
+    withCredentials: true // Explicit credentials for Safari
+  });
   return res.data.data;
 };
 
-//  Approve pending seller
+// Approve pending seller
 export const approveSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/approve/${userid}`,
     {},
-    { withCredentials: true }
+    { withCredentials: true } // Explicit credentials for Safari
   );
   return res.data.data;
 };
@@ -138,15 +142,15 @@ export const rejectSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/reject/${userid}`,
     {},
-    { withCredentials: true }
+    { withCredentials: true } // Explicit credentials for Safari
   );
   return res.data.data;
 };
 
-//update profile
+// Update profile
 export const updateProfileService = async (profileData) => {
   const res = await axiosInstance.put("/api/users/update", profileData, {
-    withCredentials: true,
+    withCredentials: true, // Explicit credentials for Safari
   });
   return res.data.data;
 };
