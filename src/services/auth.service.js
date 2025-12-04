@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/axios";
+import { axiosInstance, axiosRefresh } from "@/lib/axios";
 
 export const registerService = async (userData) => {
   const res = await axiosInstance.post("/api/users/register", userData);
@@ -38,14 +38,14 @@ export const updateShippingAddressService = async ({ address, index }) => {
   const res = await axiosInstance.put(
     "/api/users/address",
     { address, index },
-    { withCredentials: true } // Explicit credentials for Safari
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
   );
   return res.data.data;
 };
 
 export const deleteAddressService = async (index) => {
   const res = await axiosInstance.delete(`/api/users/address/${index}`, {
-    withCredentials: true, // Explicit credentials for Safari
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
   });
   return res.data.data;
 };
@@ -53,7 +53,7 @@ export const deleteAddressService = async (index) => {
 export const checkauthService = async () => {
   try {
     const res = await axiosInstance.get("/api/users/profile", {
-      withCredentials: true, // Explicit credentials for Safari
+      withCredentials: true, // Explicit credentials for cross-browser compatibility
     });
     return res.data.data;
   } catch (error) {
@@ -83,7 +83,7 @@ export const resendVerificationService = async (userid) => {
 export const logoutService = async () => {
   try {
     await axiosInstance.post("/api/users/logout", {}, {
-      withCredentials: true // Explicit credentials for Safari
+      withCredentials: true // Explicit credentials for cross-browser compatibility
     });
   } catch (error) {
     console.log("Error during logout:", error);
@@ -114,7 +114,7 @@ export const resetPasswordService = async (credentials) => {
 // Apply for seller
 export const applySellerService = async (sellerData) => {
   const res = await axiosInstance.post("/api/users/apply-seller", sellerData, {
-    withCredentials: true, // Explicit credentials for Safari
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
   });
   return res.data.data;
 };
@@ -122,7 +122,7 @@ export const applySellerService = async (sellerData) => {
 // Fetch all users (admin only)
 export const getAllUsersService = async () => {
   const res = await axiosInstance.get("/api/users", { 
-    withCredentials: true // Explicit credentials for Safari
+    withCredentials: true // Explicit credentials for cross-browser compatibility
   });
   return res.data.data;
 };
@@ -132,7 +132,7 @@ export const approveSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/approve/${userid}`,
     {},
-    { withCredentials: true } // Explicit credentials for Safari
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
   );
   return res.data.data;
 };
@@ -142,7 +142,7 @@ export const rejectSellerService = async (userid) => {
   const res = await axiosInstance.put(
     `/api/users/sellers/reject/${userid}`,
     {},
-    { withCredentials: true } // Explicit credentials for Safari
+    { withCredentials: true } // Explicit credentials for cross-browser compatibility
   );
   return res.data.data;
 };
@@ -150,7 +150,7 @@ export const rejectSellerService = async (userid) => {
 // Update profile
 export const updateProfileService = async (profileData) => {
   const res = await axiosInstance.put("/api/users/update", profileData, {
-    withCredentials: true, // Explicit credentials for Safari
+    withCredentials: true, // Explicit credentials for cross-browser compatibility
   });
   return res.data.data;
 };
