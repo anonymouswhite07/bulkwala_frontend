@@ -51,8 +51,6 @@ const Cart = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // fetchCart is stable from zustand store
 
-<<<<<<< HEAD
-=======
   // Add visibility change listener to refresh cart when user returns to tab
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -69,7 +67,6 @@ const Cart = () => {
     };
   }, [fetchCart]);
 
->>>>>>> 460700d960a77f96500b74421728d156211c487a
   // ⭐ Auto-scroll for BUY NOW product
   useEffect(() => {
     if (buyNowProductId) {
@@ -90,14 +87,9 @@ const Cart = () => {
   useEffect(() => {
     fetchActiveOffer();
   }, []);
-<<<<<<< HEAD
   // ✅ Loading state - Show loading indicator while cart is initializing
   // Added extra check for cartInitialized to handle iOS Safari caching issues
   if (isLoading || !isFetched || !cartInitialized) {
-=======
-  // ✅ Loading state
-  if (isLoading || !isFetched) {
->>>>>>> 460700d960a77f96500b74421728d156211c487a
     return (
       <div className="min-h-screen flex justify-center items-center text-gray-600 text-base sm:text-lg">
         Loading cart...
@@ -125,7 +117,6 @@ const Cart = () => {
       toast.error("Failed to update quantity");
     }
   };
-
   const handleRemoveItem = async (productId) => {
     try {
       await removeCartItem(productId);
@@ -159,7 +150,7 @@ const Cart = () => {
 
       if (flashDiscount > 0) {
         toast.error(
-          "Flash Offer is active — you can’t apply a coupon right now."
+          "Flash Offer is active — you can't apply a coupon right now."
         );
         return;
       }
@@ -191,17 +182,25 @@ const Cart = () => {
 
   const handleApplyReferral = async () => {
     try {
+      if (referralApplied) {
+        toast.error("Referral has already been applied.");
+        return;
+      }
+
       if (couponApplied) {
-        toast.error("You can't use referral when a coupon is applied.");
+        toast.error("You can't use a referral when a coupon is applied.");
         return;
       }
 
       if (flashDiscount > 0) {
-        toast.error("You can't apply referral during an active flash offer.");
+        toast.error(
+          "Flash Offer is active — you can't apply a referral right now."
+        );
         return;
       }
 
-      const result = await applyReferral(referralCode);
+      const result = await applyReferral({ referralCode });
+
       if (!result.success) {
         toast.error(result.message || "Invalid referral code");
         return;
@@ -209,26 +208,19 @@ const Cart = () => {
 
       toast.success(result.message || "Referral applied successfully!");
       setReferralCode("");
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong while applying referral");
     }
   };
 
   const handleRemoveReferral = async () => {
-    const res = await removeReferral();
-    if (res.success) toast.success("Referral removed");
-    else toast.error(res.message || "Failed to remove referral");
-  };
-
-  // NOTE: totalPrice coming from store already contains discount (store/calculation),
-  // so we should display totalPrice directly and avoid subtracting discount again here.
-  const displayedTotal =
-    totalPrice != null ? Number(totalPrice).toFixed(2) : "0.00";
-
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    try {
+      await removeReferral();
+      await fetchCart();
+      toast.success("Referral removed");
+    } catch (error) {
+      toast.error("Failed to remove referral");
+    }
   };
 
   // ✅ Layout
@@ -267,319 +259,249 @@ const Cart = () => {
 
             return (
               <div
-                key={productId || index}
+                key={`${productId}-${index}`}
                 id={`cart-item-${productId}`}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b py-4 gap-4 sm:gap-6"
+                className="border border-gray-200 rounded-lg p-4 sm:p-6"
               >
-                {/* Show loading state if product details not loaded yet (guest cart) */}
-                {!product ? (
-                  <div className="w-full flex items-center justify-center py-8">
-                    <p className="text-gray-500">Loading product details...</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Left: Product Info */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Left: Image + Title */}
+                  <div className="flex gap-4">
+                    {product?.images?.[0] ? (
                       <img
-                        src={
-                          product.images?.[0] ||
-                          "https://ik.imagekit.io/bulkwala/demo/default-product.png"
-                        }
-                        alt={product.title || "Product"}
-                        className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 object-cover rounded-md mx-auto sm:mx-0"
+                        src={product.images[0]}
+                        alt={product.title}
+                        className="w-24 h-24 object-contain rounded-md border border-gray-200"
                       />
-                      <div className="flex flex-col gap-2 w-full">
-                        <h3 className="text-lg sm:text-xl font-medium text-gray-800">
-                          {product.title || "Product"}
-                        </h3>
-                        <p className="text-gray-500 text-sm line-clamp-2">
-                          {product.description || ""}
-                        </p>
-                        <p className="text-gray-900 font-semibold text-base sm:text-lg">
-                          ₹{product.discountPrice || product.price || 0}
-                          {product.discountPrice &&
-                            product.discountPrice < product.price && (
-                              <span className="text-gray-400 line-through text-sm ml-2">
-                                ₹{product.price}
-                              </span>
-                            )}
-                        </p>
-                        {/* ✅ Stock warnings */}
-                        {product.stock !== undefined && (
-                          <div className="mt-1">
-                            {product.stock === 0 ? (
-                              <p className="text-red-600 text-xs font-medium">
-                                ⚠️ Out of Stock
-                              </p>
-                            ) : product.stock < 5 ? (
-                              <p className="text-orange-600 text-xs font-medium">
-                                ⚠️ Only {product.stock} left in stock
-                              </p>
-                            ) : item.quantity > product.stock ? (
-                              <p className="text-red-600 text-xs font-medium">
-                                ⚠️ Only {product.stock} available. Quantity
-                                adjusted.
-                              </p>
-                            ) : null}
-                          </div>
+                    ) : (
+                      <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center">
+                        <span className="text-gray-500 text-xs">No image</span>
+                      </div>
+                    )}
+
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 line-clamp-2">
+                        {product?.title || "Product"}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                        {product?.description || ""}
+                      </p>
+
+                      {/* Price */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="font-medium text-gray-900">
+                          ₹
+                          {(product?.discountPrice > 0
+                            ? product.discountPrice
+                            : product?.price || 0
+                          ).toFixed(2)}
+                        </span>
+                        {product?.discountPrice > 0 && product?.price > 0 && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ₹{product.price.toFixed(2)}
+                          </span>
                         )}
                       </div>
+
+                      {/* Stock warning */}
+                      {product?.stock === 0 && (
+                        <p className="text-red-600 text-sm mt-1">Out of stock</p>
+                      )}
+                      {product?.stock > 0 && product?.stock < 5 && (
+                        <p className="text-orange-600 text-sm mt-1">
+                          Only {product.stock} left!
+                        </p>
+                      )}
                     </div>
+                  </div>
 
-                    {/* Right: Quantity + Remove */}
-                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                      <Input
-                        type="number"
-                        min={1}
-                        max={5}
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          let newQty = parseInt(raw) || 1;
-<<<<<<< HEAD
+                  {/* Right: Controls */}
+                  <>
+                    {/* Quantity + Price */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 ml-auto">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          Qty:
+                        </span>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={5}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            let newQty = parseInt(raw) || 1;
 
-                          // 💥 Detect increment attempt
-                          const isIncrement = newQty > item.quantity;
+                            // iOS Safari fix: Ensure value is within bounds
+                            if (newQty < 1) newQty = 1;
+                            if (newQty > 5) newQty = 5;
+                            
+                            // Prevent values > 5
+                            if (value > 5) e.target.value = 5;
 
-                          // 💥 Check max quantity
-                          if (newQty > 5) {
-                            if (isIncrement) {
-                              toast.warning(
-                                "Maximum allowed quantity is 5 per product"
-                              );
-                            }
-
-                            // Force UI to remain 5
-                            newQty = 5;
-                            e.target.value = 5;
-
-                            if (item.quantity !== 5) {
-                              handleUpdateQuantity(productId, 5);
-                            }
-                            return;
+                            handleUpdateQuantity(productId, newQty);
+                          }}
+                          onBlur={(e) => {
+                            const value = parseInt(e.target.value) || 1;
+                            // Ensure value stays within bounds
+                            if (value < 1) e.target.value = 1;
+                            if (value > 5) e.target.value = 5;
+                          }}
+                          className="w-16 text-center border border-gray-300 rounded-md shadow-sm text-sm touch-manipulation"
+                          disabled={isUpdating || product?.stock === 0}
+                          title={
+                            product?.stock === 0
+                              ? "Out of stock"
+                              : `Max: ${product?.stock || "N/A"}`
                           }
+                          // iOS Safari specific attributes
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                        />
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleRemoveItem(productId)}
+                          onTouchEnd={(e) => {
+                            // Prevent ghost click on touch devices
+                            e.preventDefault();
+                            handleRemoveItem(productId);
+                          }}
+                          disabled={isUpdating}
+                          className="text-sm sm:text-base px-3 sm:px-4 touch-manipulation"
+                        >
+                          Remove
+                        </Button>
+                      </div>
 
-                          // 🚨 Stock check
-                          const maxStock = product?.stock || 999;
-                          if (newQty > maxStock) {
-                            toast.warning(
-                              `Only ${maxStock} items available in stock`
-                            );
-                            newQty = maxStock;
-                            e.target.value = maxStock;
-
-                            if (item.quantity !== maxStock) {
-                              handleUpdateQuantity(productId, maxStock);
-                            }
-                            return;
-                          }
-
-                          handleUpdateQuantity(productId, newQty);
-                        }}
-                        className="w-16 text-center border border-gray-300 rounded-md shadow-sm text-sm"
-=======
-                          
-                          // iOS Safari fix: Ensure value is within bounds
-                          if (newQty < 1) newQty = 1;
-                          if (newQty > 5) newQty = 5;
-                          
-                          // Update the input field directly to prevent iOS Safari issues
-                          e.target.value = newQty;
-                          
-                          handleUpdateQuantity(productId, newQty);
-                        }}
-                        onBlur={(e) => {
-                          // Additional validation on blur
-                          const value = parseInt(e.target.value) || 1;
-                          if (value < 1) e.target.value = 1;
-                          if (value > 5) e.target.value = 5;
-                        }}
-                        className="w-16 text-center border border-gray-300 rounded-md shadow-sm text-sm touch-manipulation"
->>>>>>> 460700d960a77f96500b74421728d156211c487a
-                        disabled={isUpdating || product?.stock === 0}
-                        title={
-                          product?.stock === 0
-                            ? "Out of stock"
-                            : `Max: ${product?.stock || "N/A"}`
-                        }
-<<<<<<< HEAD
-=======
-                        // iOS Safari specific attributes
-                        inputMode="numeric"
-                        pattern="[0-9]*"
->>>>>>> 460700d960a77f96500b74421728d156211c487a
-                      />
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleRemoveItem(productId)}
-<<<<<<< HEAD
-                        disabled={isUpdating}
-                        className="text-sm sm:text-base px-3 sm:px-4"
-=======
-                        onTouchEnd={(e) => {
-                          // Prevent ghost click on touch devices
-                          e.preventDefault();
-                          handleRemoveItem(productId);
-                        }}
-                        disabled={isUpdating}
-                        className="text-sm sm:text-base px-3 sm:px-4 touch-manipulation"
->>>>>>> 460700d960a77f96500b74421728d156211c487a
-                      >
-                        Remove
-                      </Button>
+                      {/* Item Total */}
+                      <div className="text-right">
+                        <p className="font-medium text-gray-900">
+                          ₹
+                          {(
+                            (product?.discountPrice > 0
+                              ? product.discountPrice
+                              : product?.price || 0) * item.quantity
+                          ).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 460700d960a77f96500b74421728d156211c487a
                   </>
-                )}
+                </div>
               </div>
             );
           })}
         </div>
-        {/* Flash Offer Banner */}
-        {cart.flashDiscount > 0 && timeLeft > 0 && (
-          <div className="p-4 mb-4 bg-gradient-to-r from-[#02066F] to-[#0A1280] text-white rounded-md text-center animate-pulse transition-all duration-500 ease-in-out">
-            <p className="font-semibold">
-              ⚡ Flash Offer {cart.flashDiscountPercent}% OFF applied
-              automatically!
-            </p>
-            <p className="text-sm text-yellow-300 mt-1">
-              Ends in {formatTime(timeLeft)}
-            </p>
-          </div>
-        )}
-        {/* Summary Section */}
-        <div className="mt-8 border-t pt-6 space-y-3 text-sm sm:text-base md:text-lg">
-          <div className="flex justify-between">
-            <span className="font-semibold text-gray-700">Items Price</span>
-            <span className="font-medium">₹{(itemsPrice || 0).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-semibold text-gray-700">Shipping</span>
-            <span className="font-medium">
-              ₹{(shippingPrice || 0).toFixed(2)}
-            </span>
-          </div>
-<<<<<<< HEAD
-=======
-          {itemsPrice < 279 && itemsPrice > 0 && (
-            <div className="text-xs sm:text-sm text-blue-600 italic">
-              Add ₹{(279 - itemsPrice).toFixed(2)} more to get FREE shipping!
-            </div>
-          )}
-          {itemsPrice >= 279 && itemsPrice > 0 && (
-            <div className="text-xs sm:text-sm text-green-600 font-medium">
-              🎉 Free shipping on this order!
-            </div>
-          )}
->>>>>>> 460700d960a77f96500b74421728d156211c487a
 
-          {/* Show only one discount — priority: Coupon > Referral > Flash */}
-          {discount > 0 ? (
-            <div className="flex justify-between text-green-600 font-medium">
-              <span>Coupon Discount</span>
-              <span>-₹{Number(discount).toFixed(2)}</span>
-            </div>
-          ) : cart.referralDiscount > 0 ? (
-            <div className="flex justify-between text-purple-600 font-medium">
-              <span>Referral Discount</span>
-              <span>-₹{cart.referralDiscount.toFixed(2)}</span>
-            </div>
-          ) : cart.flashDiscount > 0 ? (
-            <div className="flex justify-between text-blue-600 font-medium">
-              <span>Flash Offer ({cart.flashDiscountPercent}% OFF)</span>
-              <span>-₹{cart.flashDiscount.toFixed(2)}</span>
-            </div>
-          ) : null}
+        {/* Summary */}
+        <div className="mt-8 bg-gray-50 rounded-lg p-4 sm:p-6">
+          <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
 
-          <div className="flex justify-between border-t pt-4 text-base sm:text-lg md:text-xl font-semibold">
-            <span>Total Price</span>
-            <span>₹{displayedTotal}</span>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>₹{itemsPrice.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Shipping</span>
+              <span>
+                ₹{(shippingPrice || 0).toFixed(2)}
+              </span>
+            </div>
+            {itemsPrice < 279 && itemsPrice > 0 && (
+              <div className="text-xs sm:text-sm text-blue-600 italic">
+                Add ₹{(279 - itemsPrice).toFixed(2)} more to get FREE shipping!
+              </div>
+            )}
+            {itemsPrice >= 279 && itemsPrice > 0 && (
+              <div className="text-xs sm:text-sm text-green-600 italic">
+                🎉 Free shipping on this order!
+              </div>
+            )}
+
+            {/* Show only one discount — priority: Coupon > Referral > Flash */}
+            {discount > 0 ? (
+              <div className="flex justify-between text-green-600">
+                <span>
+                  Discount{" "}
+                  {couponApplied && `(${appliedCouponCode})`}
+                  {referralApplied && " (Referral)"}
+                  {flashDiscount > 0 && " (Flash Offer)"}
+                </span>
+                <span>-₹{discount.toFixed(2)}</span>
+              </div>
+            ) : null}
+
+            <div className="border-t border-gray-300 pt-2 mt-2 flex justify-between font-semibold text-lg">
+              <span>Total</span>
+              <span>₹{totalPrice.toFixed(2)}</span>
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Price inclusive of all applicable taxes.
-          </p>
-        </div>
-        {/* Coupon Input / Applied Coupon */}
-        <div className="mt-8">
-          {!couponApplied ? (
-            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-8">
+
+          {/* Coupon Section */}
+          {!couponApplied && !referralApplied && flashDiscount <= 0 && (
+            <div className="mt-6 flex flex-col sm:flex-row gap-2">
               <Input
                 type="text"
                 placeholder="Enter coupon code"
                 value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                className="w-full sm:w-auto text-sm sm:text-base"
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                className="flex-1"
               />
               <Button
                 onClick={handleApplyCoupon}
-                disabled={isUpdating || !couponCode}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base"
+                disabled={isUpdating || !couponCode.trim()}
+                className="bg-[#02066F] hover:bg-[#02066F]/90"
               >
                 Apply Coupon
               </Button>
             </div>
-          ) : (
-            <div className="mt-4 flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded-md">
-              <div>
-                <p className="text-green-800 font-medium">
-                  ✅ Coupon applied
-                  {appliedCouponCode ? ` — ${appliedCouponCode}` : ""}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  {discount > 0
-                    ? `You saved ₹${Number(discount).toFixed(2)}`
-                    : null}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleRemoveCoupon}
-                  disabled={isUpdating}
-                  className="text-sm sm:text-base"
-                >
-                  Remove Coupon
-                </Button>
-              </div>
+          )}
+
+          {/* Applied Coupon */}
+          {couponApplied && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex justify-between items-center">
+              <p className="text-green-800">
+                Coupon applied: <span className="font-semibold">{appliedCouponCode}</span>
+              </p>
+              <Button
+                variant="outline"
+                onClick={handleRemoveCoupon}
+                className="text-sm sm:text-base"
+              >
+                Remove Coupon
+              </Button>
             </div>
           )}
 
-          {couponError && (
-            <p className="text-red-500 text-sm mt-2">{couponError}</p>
-          )}
-        </div>
-        {/* Referral Code Section */}
-        <div className="mt-8">
-          {!referralApplied ? (
-            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+          {/* Referral Section */}
+          {!referralApplied && !couponApplied && flashDiscount <= 0 && (
+            <div className="mt-4 flex flex-col sm:flex-row gap-2">
               <Input
                 type="text"
                 placeholder="Enter referral code"
                 value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
-                className="w-full sm:w-auto text-sm sm:text-base"
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                className="flex-1"
               />
               <Button
                 onClick={handleApplyReferral}
-                disabled={!referralCode}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base"
+                disabled={isUpdating || !referralCode.trim()}
+                className="bg-[#02066F] hover:bg-[#02066F]/90"
               >
                 Apply Referral
               </Button>
             </div>
-          ) : (
-            <div className="mt-4 flex items-center justify-between bg-green-50 border border-green-200 p-3 rounded-md">
-              <div>
-                <p className="text-green-800 font-medium">
-                  ✅ Referral applied — {referralCode}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  You saved ₹{referralDiscount.toFixed(2)}
-                </p>
-              </div>
+          )}
+
+          {/* Applied Referral */}
+          {referralApplied && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex justify-between items-center">
+              <p className="text-green-800">
+                Referral applied:{" "}
+                <span className="font-semibold">
+                  {cart.referralCode || "Code"}
+                </span>
+              </p>
               <Button
                 variant="outline"
                 onClick={handleRemoveReferral}
@@ -589,7 +511,21 @@ const Cart = () => {
               </Button>
             </div>
           )}
+
+          {/* Flash Offer Timer */}
+          {flashDiscount > 0 && timeLeft > 0 && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-center">
+                ⏳ Flash Offer ends in{" "}
+                <span className="font-semibold">
+                  {Math.floor(timeLeft / 60)}:
+                  {(timeLeft % 60).toString().padStart(2, "0")}
+                </span>
+              </p>
+            </div>
+          )}
         </div>
+
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-8">
           <Button
