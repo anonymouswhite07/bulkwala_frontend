@@ -36,10 +36,7 @@
     "swiper": "^12.0.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.13",
-<<<<<<< HEAD
-=======
     "vite": "^7.1.6",
->>>>>>> 460700d960a77f96500b74421728d156211c487a
     "zod": "^4.1.11",
     "zustand": "^5.0.8"
   },
@@ -52,11 +49,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.4.0",
-<<<<<<< HEAD
-    "tw-animate-css": "^1.3.8",
-    "vite": "^7.1.6"
-=======
     "tw-animate-css": "^1.3.8"
->>>>>>> 460700d960a77f96500b74421728d156211c487a
   }
 }
